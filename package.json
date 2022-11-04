@@ -74,21 +74,24 @@
     "README.md": "doctoc --notitle"
   },
   "dependencies": {
-    "global": "^4.4.0",
-    "video.js": "^6 || ^7"
+    "global": "^4.4.0"
   },
   "devDependencies": {
     "@babel/runtime": "^7.14.0",
-    "@videojs/generator-helpers": "~2.0.2",
+    "@videojs/generator-helpers": "^2.0.2",
     "jsdoc": "~3.6.6",
-    "karma": "^6.3.2",
+    "karma": "^6.4.1",
     "rollup": "^2.46.0",
     "sinon": "^9.1.0",
-    "videojs-generate-karma-config": "~8.0.0",
-    "videojs-generate-rollup-config": "~6.2.0",
-    "videojs-generator-verify": "~3.0.3",
-    "videojs-playlist": "^4.3.1",
-    "videojs-playlist-ui": "^3.8.0",
-    "videojs-standard": "^8.0.4"
+    "video.js": "^7.20.3",
+    "videojs-generate-karma-config": "^8.0.1",
+    "videojs-generate-rollup-config": "^7.0.0",
+    "videojs-generator-verify": "^4.0.1",
+    "videojs-playlist": "^5.0.0",
+    "videojs-playlist-ui": "^4.1.0",
+    "videojs-standard": "^8.0.6"
+  },
+  "peerDependencies": {
+    "video.js": "^7 || ^8"
   }
 }

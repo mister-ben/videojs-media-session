@@ -5,13 +5,24 @@
   <title>videojs-media-session Demo</title>
   <link href="/node_modules/video.js/dist/video-js.css" rel="stylesheet">
   <link href="/node_modules/videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css" rel="stylesheet">
+  <style>
+    .holder {
+      width: 100%;
+      max-width: 640px; 
+    }
+    .holder .vjs-playlist {
+      width: 50%
+    }
+  </style>
 </head>
 <body>
-  <video id="videojs-media-session-player" class="video-js vjs-default-skin" controls
-         poster="//vjs.zencdn.net/v/oceans.png"
-    >
-  </video>
-  <div class="vjs-playlist"></div>
+  <div class="holder">
+    <video id="videojs-media-session-player" class="video-js vjs-fluid" controls
+           poster="//vjs.zencdn.net/v/oceans.png"
+      >
+    </video>
+    <div class="vjs-playlist"></div>
+  </div>
   <ul>
     <li><a href="/test/">Run unit tests in browser.</a></li>
     <li><a href="/dist/docs/api/">Read generated api docs.</a></li>

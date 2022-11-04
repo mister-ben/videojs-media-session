@@ -1,12 +1,11 @@
 import videojs from 'video.js';
 import window from 'global/window';
+import {version as VERSION} from '../package.json';
 
 // Default options for the plugin.
 const defaults = {};
 
-// Cross-compatibility for Video.js 5 and 6.
-const registerPlugin = videojs.registerPlugin || videojs.plugin;
-// const dom = videojs.dom || videojs;
+const merge = videojs.obj ? videojs.obj.merge : videojs.mergeOptions;
 
 const navigator = window.navigator;
 
@@ -15,23 +14,38 @@ const MEDIA_SESSION_EXISTS = Boolean(navigator.mediaSession);
 const SKIP_TIME = 10;
 
 const getType = (url) => {
-  const ext = url.split(/[#?]/)[0].split('.').pop().trim().toLowerCase();
+  const ext = videojs.url.getFileExtension(url);
 
   if (ext === 'jpg') {
     return 'image/jpeg';
   }
+  if (ext === 'svg') {
+    return 'image/svg+xml';
+  }
   return `image/${ext}`;
+};
+
+const updatePosition = (player) => {
+  if ('positionState' in navigator.mediaSession) {
+    const state = {
+      duration: player.duration(),
+      playbackRate: player.playbackRate(),
+      position: player.currentTime()
+    };
+
+    navigator.mediaSession.setPositionState(state);
+  }
 };
 
 const updateMediaSession = (player) => {
   let curSrc;
 
-  if (player.playlist) {
+  if (player.usingPlugin('playlist')) {
     const playlist = player.playlist();
 
     curSrc = Object.assign({}, playlist[player.playlist.currentItem()]);
   } else {
-    curSrc = Object.assign({}, player.currentSource());
+    curSrc = Object.assign({}, player.getMedia());
   }
 
   curSrc.title = curSrc.name;
@@ -54,24 +68,51 @@ const updateMediaSession = (player) => {
 
   curSrc.src = player.currentSrc();
   navigator.mediaSession.metadata = new window.MediaMetadata(curSrc);
+  updatePosition();
 };
 
-const setUpSkips = (player) => {
-  navigator.mediaSession.setActionHandler('seekbackward', function() {
-    player.currentTime(player.currentTime() - SKIP_TIME);
-  });
-  navigator.mediaSession.setActionHandler('seekforward', function() {
-    player.currentTime(player.currentTime() + SKIP_TIME);
-  });
-};
+const setUpControls = (player) => {
 
-const setUpPlaylist = (player) => {
-  navigator.mediaSession.setActionHandler('previoustrack', function() {
-    player.playlist.previous();
-  });
-  navigator.mediaSession.setActionHandler('nexttrack', function() {
-    player.playlist.next();
-  });
+  const handlers = [
+    ['play', () => {
+      player.play();
+    }],
+    ['pause', () => {
+      player.pause();
+    }],
+    ['stop', () => {
+      player.pause();
+    }],
+    ['seekbackward', (d) => {
+      player.currentTime(player.currentTime() - (d && d.skipOffset ? d.skipOffset : SKIP_TIME));
+      updatePosition();
+    }],
+    ['seekforward', (d) => {
+      player.currentTime(player.currentTime() + (d && d.skipOffset ? d.skipOffset : SKIP_TIME));
+      updatePosition();
+    }],
+    ['seekto', (d) => {
+      player.currentTime(d.seekTime);
+      updatePosition();
+    }]
+  ];
+
+  if (player.usingPlugin('playlist')) {
+    handlers.push(['previoustrack', () => {
+      player.playlist.previous();
+    }]);
+    handlers.push(['nexttrack', () => {
+      player.playlist.next();
+    }]);
+  }
+
+  for (const [action, handler] of handlers) {
+    try {
+      navigator.mediaSession.setActionHandler(action, handler);
+    } catch (error) {
+      videojs.log.debug(`Media session action ${action} cannot be set`);
+    }
+  }
 };
 
 /**
@@ -89,19 +130,16 @@ const setUpPlaylist = (player) => {
  */
 const onPlayerReady = (player, options) => {
   if (!MEDIA_SESSION_EXISTS) {
-    videojs.log.warn(`Media Session is not available on this device.
-                      Please try Chrome for Android 57`);
+    videojs.log.debug('Media Session is not available on this device.');
     return;
   }
 
-  setUpSkips(player);
-
-  if (player.playlist) {
-    setUpPlaylist(player);
-  }
+  setUpControls(player);
 
   player.on('loadstart', () => updateMediaSession(player));
+
   updateMediaSession(player);
+
   player.addClass('vjs-media-session');
 
 };
@@ -120,14 +158,14 @@ const onPlayerReady = (player, options) => {
  */
 const mediaSession = function(options) {
   this.ready(() => {
-    onPlayerReady(this, videojs.mergeOptions(defaults, options));
+    onPlayerReady(this, merge(defaults, options));
   });
 };
 
 // Register the plugin with video.js.
-registerPlugin('mediaSession', mediaSession);
+videojs.registerPlugin('mediaSession', mediaSession);
 
 // Include the version number.
-mediaSession.VERSION = '__VERSION__';
+mediaSession.VERSION = VERSION;
 
 export default mediaSession;

@@ -81,9 +81,9 @@ function getAwesomePlaylist() {
     }],
     name: '"Caminandes 2: Gran Dillama" - Blender Animated Short',
     description: 'A young llama named Koro discovers that the grass is always greener on the other side (of the fence).',
-    poster: 'https://image.tmdb.org/t/p/original/gvk44tzEdSCQKU5w0lsYRX9amZJ.jpg',
+    poster: BASE_URL + 'caminandes/artwork-512.png',
     thumbnail: [{
-      src: 'https://image.tmdb.org/t/p/original/gvk44tzEdSCQKU5w0lsYRX9amZJ.jpg',
+      src: BASE_URL + 'caminandes/artwork-256.png', sizes: '256x256',
     }],
     artist: 'Blender Foundation',
     artwork: [

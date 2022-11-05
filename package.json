@@ -25,7 +25,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:js": "npm run build:js -- -w",
     "prepublish": "npm run build",
-    "prepublishOnly": "npm-run-all build-prod && vjsverify --verbose"
+    "prepublishOnly": "npm-run-all build-prod && vjsverify --verbose --skip-es-check"
   },
   "keywords": [
     "videojs",
@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.14.0",
-    "@videojs/generator-helpers": "^2.0.2",
+    "@videojs/generator-helpers": "^3.2.0",
     "jsdoc": "~3.6.6",
     "karma": "^6.4.1",
     "rollup": "^2.46.0",

@@ -9,7 +9,7 @@ const merge = videojs.obj ? videojs.obj.merge : videojs.mergeOptions;
 
 const navigator = window.navigator;
 
-const MEDIA_SESSION_EXISTS = Boolean(navigator.mediaSession);
+const MEDIA_SESSION_EXISTS = Boolean(navigator && navigator.mediaSession);
 
 const SKIP_TIME = 10;
 
